@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>READING 4A – Vocabulary Master Game</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet">
+  <style>
+html,body{margin:0;padding:0;height:100%;font-family:'Nunito',sans-serif;}
+*{box-sizing:border-box;}
+:root{--primary:#2563eb;--primary-dark:#1d4ed8;--pink:#ec4899;--pink-light:#fce7f3;--bg:#f0f4ff;--card:#fff;--text:#1e293b;--gray:#64748b;--green:#22c55e;--red:#ef4444;--orange:#f97316;}
+.app-wrap{height:100%;width:100%;overflow-y:auto;background:var(--bg);}
+.btn{padding:10px 20px;border-radius:12px;font-weight:700;cursor:pointer;border:none;transition:all .2s;font-family:inherit;font-size:15px;}
+.btn:active{transform:scale(.96);}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-primary:hover{background:var(--primary-dark);}
+.btn-pink{background:var(--pink);color:#fff;}
+.btn-pink:hover{background:#db2777;}
+.btn-outline{background:transparent;border:2px solid var(--primary);color:var(--primary);}
+.btn-outline:hover{background:var(--primary);color:#fff;}
+.btn-sm{padding:6px 14px;font-size:13px;border-radius:8px;}
+.card{background:var(--card);border-radius:16px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,.06);}
+.option-btn{width:100%;text-align:left;padding:14px 18px;border-radius:12px;border:2px solid #e2e8f0;background:#fff;cursor:pointer;font-size:15px;font-family:inherit;font-weight:600;transition:all .2s;color:var(--text);}
+.option-btn:hover:not(:disabled){border-color:var(--primary);background:#eff6ff;}
+.option-btn.correct{border-color:var(--green);background:#f0fdf4;color:var(--green);}
+.option-btn.wrong{border-color:var(--red);background:#fef2f2;color:var(--red);}
+.option-btn:disabled{cursor:default;}
+.shake{animation:shake .4s;}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.glow-pink{animation:glowP .6s;}
+@keyframes glowP{0%{box-shadow:0 0 0 rgba(236,72,153,0)}50%{box-shadow:0 0 30px rgba(236,72,153,.4)}100%{box-shadow:0 0 0 rgba(236,72,153,0)}}
+.flash-bg{animation:flashBg .5s;}
+@keyframes flashBg{0%{background:var(--pink-light)}100%{background:transparent}}
+.fade-in{animation:fadeIn .4s;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.slide-up{animation:slideUp .5s;}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.combo-fire{animation:comboFire .6s;}
+@keyframes comboFire{0%{transform:scale(1)}30%{transform:scale(1.3)}60%{transform:scale(1.1)}100%{transform:scale(1)}}
+.progress-bar{height:6px;border-radius:3px;background:#e2e8f0;overflow:hidden;}
+.progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--primary),var(--pink));transition:width .4s;}
+.streak-text{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:48px;font-weight:900;color:var(--pink);pointer-events:none;z-index:100;animation:streakPop .8s forwards;}
+@keyframes streakPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}30%{opacity:1;transform:translate(-50%,-50%) scale(1.2)}60%{transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1) translateY(-40px)}}
+canvas#fireworks{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:99;}
+.fill-input{border:none;border-bottom:2px solid var(--primary);background:transparent;font-size:16px;font-weight:700;padding:4px 8px;outline:none;font-family:inherit;min-width:120px;color:var(--primary);text-align:center;}
+.fill-input:focus{border-color:var(--pink);}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;}
+.badge-blue{background:#dbeafe;color:var(--primary);}
+.badge-pink{background:#fce7f3;color:var(--pink);}
+.badge-green{background:#dcfce7;color:var(--green);}
+.badge-orange{background:#ffedd5;color:var(--orange);}
+.tooltip{position:relative;}
+.vocab-card{border:1px solid #e2e8f0;border-radius:12px;padding:16px;transition:all .2s;}
+.vocab-card:hover{border-color:var(--primary);box-shadow:0 4px 16px rgba(37,99,235,.1);}
+.tab-btn{padding:8px 16px;border-radius:8px;border:none;background:transparent;font-weight:700;cursor:pointer;font-family:inherit;font-size:14px;color:var(--gray);transition:all .2s;}
+.tab-btn.active{background:var(--primary);color:#fff;}
+.timer-urgent{color:var(--red);animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.xp-pop{position:fixed;pointer-events:none;z-index:101;font-weight:900;font-size:22px;color:var(--pink);animation:xpFloat 1s forwards;}
+@keyframes xpFloat{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-60px)}}
+.flip-card{perspective:600px;cursor:pointer;}
+.flip-inner{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d;}
+.flip-card.flipped .flip-inner{transform:rotateY(180deg);}
+.flip-front,.flip-back{position:absolute;inset:0;backface-visibility:hidden;border-radius:12px;display:flex;align-items:center;justify-content:center;padding:12px;font-weight:700;text-align:center;}
+.flip-front{background:linear-gradient(135deg,var(--primary),#7c3aed);color:#fff;}
+.flip-back{background:linear-gradient(135deg,var(--pink),#f97316);color:#fff;transform:rotateY(180deg);}
+.mini-game-card{border:2px solid #e2e8f0;border-radius:12px;padding:20px;cursor:pointer;transition:all .2s;text-align:center;}
+.mini-game-card:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.08);}
+.pronounce-btn{background:none;border:none;cursor:pointer;font-size:18px;padding:4px 8px;transition:all .2s;color:var(--pink);}
+.pronounce-btn:hover{transform:scale(1.2);}
+.pronounce-btn:active{transform:scale(.95);}
+.synonym-item,.family-item,.collocation-item{padding:8px;border-left:3px solid var(--primary);margin-bottom:6px;background:#eff6ff;border-radius:4px;font-size:14px;}
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full">
+  <canvas id="fireworks"></canvas>
+  <div class="app-wrap" id="app"><!-- Main Menu -->
+   <div id="screen-menu" class="flex flex-col items-center justify-center min-h-full p-6">
+    <div class="text-center slide-up">
+     <div class="text-6xl mb-4">
+      🧠
+     </div>
+     <h1 id="gameTitle" class="text-3xl md:text-4xl font-black mb-2" style="color:var(--primary)">READING 4A</h1>
+     <p class="text-lg font-bold mb-1" style="color:var(--pink)">Vocabulary Master Game</p>
+     <p class="text-sm mb-6" style="color:var(--gray)">Master IELTS vocabulary through interactive challenges</p>
+     <div class="flex flex-wrap gap-3 justify-center mb-6"><span class="badge badge-blue">📝 40 Words</span> <span class="badge badge-pink">🎮 7 Parts</span> <span class="badge badge-green">🏆 XP System</span> <span class="badge badge-orange">🔥 Combos</span>
+     </div><!-- Stats bar -->
+     <div id="menuStats" class="card mb-6 text-left max-w-sm mx-auto" style="display:none;">
+      <p class="font-bold mb-2" style="color:var(--text)">📊 Your Progress</p>
+      <div class="flex gap-4 text-sm font-semibold" style="color:var(--gray)"><span>🎯 XP: <span id="menuXP" style="color:var(--primary)">0</span></span> <span>🏆 Level: <span id="menuLevel" style="color:var(--pink)">1</span></span> <span>🔥 Best: <span id="menuBest" style="color:var(--orange)">0</span></span>
+      </div>
+     </div>
+     <div class="flex flex-col gap-3 max-w-xs mx-auto"><button class="btn btn-primary text-lg" onclick="startPart(1)">🧠 Part 1 – Multiple Choice (EN→EN)</button> <button class="btn btn-primary text-lg" onclick="startPart(2)">🇻🇳 Part 2 – Vietnamese→English</button> <button class="btn btn-primary text-lg" onclick="startPart(3)">✍️ Part 3 – Fill in the Blank</button> <button class="btn btn-primary text-lg" onclick="startPart(4)">🔀 Part 4 – Mixed Mode</button> <button class="btn btn-primary text-lg" onclick="startPart(5)">🧪 Part 5 – Master Test</button> <button class="btn btn-pink text-lg" onclick="showVocabList()">📚 Part 6 – Vocab List</button> <button class="btn btn-outline text-lg" onclick="showMiniGames()">🎮 Part 7 – Mini Games</button>
+     </div>
+     <div class="flex gap-2 justify-center mt-4 flex-wrap"><button class="btn btn-sm btn-outline" onclick="toggleDifficulty()" id="diffBtn">⚡ Easy</button> <button class="btn btn-sm btn-outline" onclick="resetAll()">🔄 Reset All</button>
+     </div>
+    </div>
+   </div><!-- Game Screen -->
+   <div id="screen-game" class="min-h-full p-4 md:p-6" style="display:none;">
+    <div class="max-w-2xl mx-auto"><!-- Top bar -->
+     <div class="flex items-center justify-between mb-4 flex-wrap gap-2"><button class="btn btn-sm btn-outline" onclick="goMenu()">🏠 Menu</button>
+      <div class="flex items-center gap-3 text-sm font-bold flex-wrap"><span style="color:var(--primary)">🎯 <span id="scoreDisplay">0</span></span> <span style="color:var(--orange)">🔥 <span id="comboDisplay">0</span></span> <span id="timerDisplay" style="color:var(--gray)">⏱ <span id="timerVal">0</span>s</span> <span style="color:var(--pink)">⚡ <span id="xpDisplay">0</span> XP</span>
+      </div>
+     </div>
+     <div class="progress-bar mb-4">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+     </div>
+     <div id="partLabel" class="text-center font-black text-lg mb-4" style="color:var(--primary)"></div>
+     <div id="questionArea" class="card fade-in"></div>
+     <div id="explanationArea" class="card mt-4 slide-up" style="display:none;border-left:4px solid var(--pink);max-height:400px;overflow-y:auto;"></div>
+     <div class="flex justify-center gap-3 mt-4 flex-wrap"><button class="btn btn-sm btn-outline" onclick="skipQuestion()">⏭ Skip</button> <button class="btn btn-sm btn-outline" onclick="restartPart()">🔄 Restart</button>
+     </div>
+    </div>
+   </div><!-- Vocab List Screen -->
+   <div id="screen-vocab" class="min-h-full p-4 md:p-6" style="display:none;">
+    <div class="max-w-4xl mx-auto">
+     <div class="flex items-center justify-between mb-4 flex-wrap"><button class="btn btn-sm btn-outline" onclick="goMenu()">🏠 Menu</button>
+      <h2 class="font-black text-xl" style="color:var(--primary)">📚 Vocabulary List</h2>
+      <div></div>
+     </div>
+     <div id="vocabSearch" class="mb-4">
+      <input type="text" placeholder="🔍 Search words..." class="fill-input" style="width:100%;border:2px solid #e2e8f0;border-radius:10px;padding:10px 16px;text-align:left;" oninput="filterVocab(this.value)">
+     </div>
+     <div id="vocabGrid" class="grid gap-3"></div>
+    </div>
+   </div><!-- Mini Games Screen -->
+   <div id="screen-mini" class="min-h-full p-4 md:p-6" style="display:none;">
+    <div class="max-w-2xl mx-auto">
+     <div class="flex items-center justify-between mb-6 flex-wrap"><button class="btn btn-sm btn-outline" onclick="goMenu()">🏠 Menu</button>
+      <h2 class="font-black text-xl" style="color:var(--primary)">🎮 Mini Games</h2>
+      <div></div>
+     </div>
+     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="mini-game-card" onclick="startMiniGame('memory')">
+       <div class="text-4xl mb-2">
+        🃏
+       </div>
+       <p class="font-bold" style="color:var(--primary)">Memory Flip</p>
+       <p class="text-sm" style="color:var(--gray)">Match words with meanings</p>
+      </div>
+      <div class="mini-game-card" onclick="startMiniGame('speed')">
+       <div class="text-4xl mb-2">
+        ⚡
+       </div>
+       <p class="font-bold" style="color:var(--pink)">Speed Mode</p>
+       <p class="text-sm" style="color:var(--gray)">Answer before time runs out</p>
+      </div>
+      <div class="mini-game-card" onclick="startMiniGame('matching')">
+       <div class="text-4xl mb-2">
+        🧩
+       </div>
+       <p class="font-bold" style="color:var(--orange)">Matching</p>
+       <p class="text-sm" style="color:var(--gray)">Drag to match pairs</p>
+      </div>
+     </div>
+     <div id="miniGameArea" class="mt-6"></div>
+    </div>
+   </div><!-- Results Screen -->
+   <div id="screen-results" class="flex flex-col items-center justify-center min-h-full p-6" style="display:none;">
+    <div class="card text-center max-w-md w-full slide-up">
+     <div class="text-5xl mb-4">
+      🏆
+     </div>
+     <h2 class="font-black text-2xl mb-2" style="color:var(--primary)">Part Complete!</h2>
+     <div id="resultStats" class="mb-4"></div>
+     <div class="flex flex-col gap-3"><button class="btn btn-primary" onclick="goMenu()">🏠 Back to Menu</button> <button class="btn btn-pink" id="nextPartBtn" onclick="nextPart()">➡️ Next Part</button> <button class="btn btn-outline" onclick="restartPart()">🔄 Try Again</button>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+// ===== ENHANCED VOCABULARY DATA (Bilingual + IPA) =====
+const VOCAB = [
+{word:"strike",pos:"v",ipa:"/straɪk/",meaning:"occur suddenly (war, disease)",meaningVi:"(chiến tranh, dịch bệnh) nổ ra, bùng phát",synonyms:[{word:"break out",meaning:"start suddenly",meaningVi:"bùng phát đột ngột"},{word:"erupt",meaning:"burst forth violently",meaningVi:"phun trào"},{word:"occur",meaning:"happen",meaningVi:"xảy ra"}],family:[{word:"strike (n)",meaning:"act of hitting; stoppage of work",meaningVi:"cú đánh; cuộc đình công"},{word:"striker (n)",meaning:"person who strikes",meaningVi:"người đình công"},{word:"striking (adj)",meaning:"very noticeable",meaningVi:"nổi bật"}],collocations:[{phrase:"strike a balance",meaning:"find a middle way",meaningVi:"tìm thế cân bằng"},{phrase:"strike a deal",meaning:"make an agreement",meaningVi:"ký kết thỏa thuận"},{phrase:"disaster strikes",meaning:"bad event happens",meaningVi:"thảm họa xảy ra"}],example:"A devastating plague struck the region, wiping out half the population.",exampleVi:"Một dịch bệnh tàn khốc nổ ra, tiêu diệt nửa dân số.",mistakes:"Don't confuse strike (occur) with strike (hit). | Không nhầm 'occur' với 'hit'."},
+{word:"bask in",pos:"v",ipa:"/bæsk ɪn/",meaning:"enjoy warmth, success, or praise",meaningVi:"tắm mình trong, đắm chìm trong",synonyms:[{word:"revel in",meaning:"take great pleasure in",meaningVi:"hưởng thụ"},{word:"luxuriate in",meaning:"enjoy comfort",meaningVi:"tận hưởng"},{word:"enjoy",meaning:"take pleasure in",meaningVi:"thích thú"}],family:[{word:"basking (adj)",meaning:"lying in sun",meaningVi:"nằm dưới nắng"}],collocations:[{phrase:"bask in the sun",meaning:"lie in sunshine",meaningVi:"tắm nắng"},{phrase:"bask in glory",meaning:"enjoy fame",meaningVi:"hưởng vinh quang"},{phrase:"bask in success",meaning:"enjoy achievement",meaningVi:"hưởng thành công"}],example:"After winning the award, the actress basked in international recognition.",exampleVi:"Sau khi giành giải, nữ diễn viên tắm mình trong sự công nhận quốc tế.",mistakes:"Literally: enjoy warmth/sun. Figuratively: enjoy praise/success. | Vừa thực, vừa bóng."},
+{word:"strike up",pos:"v",ipa:"/straɪk ʌp/",meaning:"begin or start (conversation, friendship)",meaningVi:"bắt đầu (tình bạn, trò chuyện)",synonyms:[{word:"initiate",meaning:"start something new",meaningVi:"khởi xướng"},{word:"start",meaning:"begin",meaningVi:"bắt đầu"},{word:"begin",meaning:"commence",meaningVi:"bắt đầu"}],family:[{word:"strike (v)",meaning:"occur or hit",meaningVi:"xảy ra"}],collocations:[{phrase:"strike up a conversation",meaning:"start talking",meaningVi:"bắt đầu trò chuyện"},{phrase:"strike up a friendship",meaning:"become friends",meaningVi:"bắt đầu tình bạn"},{phrase:"strike up a rapport",meaning:"build connection",meaningVi:"thiết lập quan hệ tốt"}],example:"She struck up a conversation with the researcher during the conference.",exampleVi:"Cô ấy bắt đầu trò chuyện với nhà nghiên cứu.",mistakes:"Only used with conversations/friendships. | Chỉ dùng với 'conversation/friendship'."},
+{word:"puzzle",pos:"v",ipa:"/ˈpʌzəl/",meaning:"to confuse someone",meaningVi:"làm ai bối rối",synonyms:[{word:"perplex",meaning:"confuse, esp. complicated things",meaningVi:"làm bối rối"},{word:"confuse",meaning:"make unclear",meaningVi:"làm bối rối"},{word:"baffle",meaning:"completely puzzle",meaningVi:"làm hoàn toàn bối rối"}],family:[{word:"puzzle (n)",meaning:"game/problem needing thinking",meaningVi:"câu đố"},{word:"puzzled (adj)",meaning:"confused",meaningVi:"bối rối"},{word:"puzzling (adj)",meaning:"confusing",meaningVi:"khó hiểu"}],collocations:[{phrase:"puzzle over",meaning:"think hard about",meaningVi:"suy nghĩ kỹ"},{phrase:"puzzle out",meaning:"solve by thinking",meaningVi:"giải quyết"},{phrase:"deeply puzzled",meaning:"very confused",meaningVi:"rất bối rối"}],example:"The unexpected findings puzzled scientists for decades.",exampleVi:"Những phát hiện bất ngờ làm các nhà khoa học bối rối.",mistakes:"Verb = confuse, not just a game. | Động từ = làm bối rối."},
+{word:"puzzled",pos:"adj",ipa:"/ˈpʌzəld/",meaning:"confused, unable to understand",meaningVi:"bối rối, không hiểu rõ",synonyms:[{word:"perplexed",meaning:"confused, esp. due to complication",meaningVi:"bối rối"},{word:"confused",meaning:"unable to think clearly",meaningVi:"bối rối, lúng túng"},{word:"baffled",meaning:"completely unable to understand",meaningVi:"hoàn toàn không hiểu"}],family:[{word:"puzzle (v)",meaning:"confuse",meaningVi:"làm bối rối"},{word:"puzzling (adj)",meaning:"confusing and hard",meaningVi:"khó hiểu"}],collocations:[{phrase:"look puzzled",meaning:"appear confused",meaningVi:"trông bối rối"},{phrase:"puzzled expression",meaning:"confused facial look",meaningVi:"biểu cảm bối rối"},{phrase:"puzzled by",meaning:"confused about",meaningVi:"bối rối về"}],example:"The student looked puzzled when reading the complex passage.",exampleVi:"Học sinh trông bối rối khi đọc đoạn văn phức tạp.",mistakes:"Puzzled = person feeling confused. Puzzling = thing causing confusion. | Puzzled (người), puzzling (vật)."},
+{word:"affluent",pos:"adj",ipa:"/ˈæf.lu.ənt/",meaning:"wealthy, rich",meaningVi:"giàu có",synonyms:[{word:"wealthy",meaning:"having much money/property",meaningVi:"giàu có"},{word:"prosperous",meaning:"successful, flourishing",meaningVi:"thịnh vượng"},{word:"well-off",meaning:"financially comfortable",meaningVi:"khá giả"}],family:[{word:"affluence (n)",meaning:"state of being wealthy",meaningVi:"sự giàu có"},{word:"affluently (adv)",meaning:"in a wealthy manner",meaningVi:"một cách giàu có"}],collocations:[{phrase:"affluent society",meaning:"wealthy community",meaningVi:"xã hội giàu có"},{phrase:"affluent neighborhood",meaning:"rich area",meaningVi:"khu vực giàu có"},{phrase:"increasingly affluent",meaning:"becoming richer",meaningVi:"ngày càng giàu có"}],example:"People in affluent societies tend to have higher life expectancy.",exampleVi:"Mọi người trong xã hội giàu có có tuổi thọ cao hơn.",mistakes:"Don't confuse with 'effluent' (wastewater). Affluent = wealthy. | Không nhầm 'effluent' (nước thải)."},
+{word:"static",pos:"adj",ipa:"/ˈstæt.ɪk/",meaning:"unchanging, stable",meaningVi:"ổn định, không thay đổi",synonyms:[{word:"unchanged",meaning:"not changed",meaningVi:"không thay đổi"},{word:"stationary",meaning:"not moving",meaningVi:"đứng yên"},{word:"stable",meaning:"firm, steady",meaningVi:"ổn định"}],family:[{word:"statics (n)",meaning:"branch of mechanics",meaningVi:"tĩnh học"},{word:"statically (adv)",meaning:"in static manner",meaningVi:"một cách tĩnh"}],collocations:[{phrase:"remain static",meaning:"stay unchanged",meaningVi:"giữ nguyên"},{phrase:"static population",meaning:"population not growing",meaningVi:"dân số không tăng"},{phrase:"static level",meaning:"unchanged level",meaningVi:"mức ổn định"}],example:"The population remained relatively static over two decades.",exampleVi:"Dân số giữ nguyên trong hai thập kỷ.",mistakes:"Static = lack of change (often negative). Stable = positive steadiness. | Static (không đổi), stable (ổn định tốt)."},
+{word:"wipe out",pos:"v",ipa:"/waɪp aʊt/",meaning:"eradicate, completely destroy",meaningVi:"xoá sổ, tiêu diệt hoàn toàn",synonyms:[{word:"eradicate",meaning:"destroy completely",meaningVi:"tiêu diệt"},{word:"eliminate",meaning:"remove entirely",meaningVi:"loại bỏ"},{word:"annihilate",meaning:"destroy completely",meaningVi:"tiêu hủy toàn bộ"}],family:[{word:"wipeout (n)",meaning:"complete failure or destruction",meaningVi:"thất bại toàn bộ"}],collocations:[{phrase:"wipe out a species",meaning:"destroy species",meaningVi:"tiêu diệt loài"},{phrase:"wipe out a population",meaning:"destroy people",meaningVi:"tiêu diệt dân số"},{phrase:"completely wiped out",meaning:"totally destroyed",meaningVi:"bị tiêu diệt hoàn toàn"}],example:"The epidemic wiped out nearly a third of the continent's population.",exampleVi:"Dịch bệnh tiêu diệt gần 1/3 dân số lục địa.",mistakes:"More dramatic than 'reduce'. Use for complete destruction. | Mạnh hơn 'giảm'."},
+{word:"mortality rate",pos:"n",ipa:"/mɔːrˈtæl.ə.ti reɪt/",meaning:"death rate, number of deaths",meaningVi:"tỷ lệ tử vong",synonyms:[{word:"death rate",meaning:"number of deaths per population",meaningVi:"tỷ lệ tử vong"},{word:"fatality rate",meaning:"rate of deaths from disease",meaningVi:"tỷ lệ tử vong"}],family:[{word:"mortal (adj)",meaning:"causing or subject to death",meaningVi:"gây tử vong"},{word:"mortality (n)",meaning:"state of being subject to death",meaningVi:"tính phải chết"},{word:"immortal (adj)",meaning:"not subject to death",meaningVi:"bất tử"}],collocations:[{phrase:"high mortality rate",meaning:"many deaths",meaningVi:"tỷ lệ tử vong cao"},{phrase:"infant mortality rate",meaning:"deaths of babies",meaningVi:"tỷ lệ tử vong trẻ sơ sinh"},{phrase:"reduce mortality rate",meaning:"lower death rate",meaningVi:"giảm tỷ lệ tử vong"}],example:"Advances in medicine significantly reduced the mortality rate.",exampleVi:"Tiến bộ y học giảm đáng kể tỷ lệ tử vong.",mistakes:"Mortality rate (deaths) ≠ Morbidity rate (illnesses). | Tỷ lệ tử vong ≠ tỷ lệ mắc bệnh."},
+{word:"fertility rate",pos:"n",ipa:"/fɜːrˈtɪl.ə.ti reɪt/",meaning:"birth rate, births per woman",meaningVi:"tỷ lệ sinh",synonyms:[{word:"birth rate",meaning:"number of births per population",meaningVi:"tỷ lệ sinh"},{word:"reproduction rate",meaning:"rate of reproduction",meaningVi:"tỷ lệ sinh sản"}],family:[{word:"fertile (adj)",meaning:"able to produce offspring",meaningVi:"có khả năng sinh sản"},{word:"fertility (n)",meaning:"ability to reproduce",meaningVi:"khả năng sinh sản"},{word:"infertile (adj)",meaning:"unable to reproduce",meaningVi:"không thể sinh sản"}],collocations:[{phrase:"declining fertility rate",meaning:"fewer births",meaningVi:"tỷ lệ sinh giảm"},{phrase:"fertility rate drops",meaning:"birth rate falls",meaningVi:"tỷ lệ sinh giảm"},{phrase:"total fertility rate",meaning:"average births per woman",meaningVi:"tỷ lệ sinh toàn bộ"}],example:"The fertility rate in developed countries has been declining steadily.",exampleVi:"Tỷ lệ sinh ở các nước phát triển giảm liên tục.",mistakes:"Fertility rate = births per woman. Birth rate = births per 1000 people. | Tỷ lệ sinh vs. tỷ lệ sinh trên 1000 người."},
+{word:"labor-intensive",pos:"adj",ipa:"/ˈleɪ.bər ɪnˈten.sɪv/",meaning:"requiring much human work",meaningVi:"tốn nhiều sức lao động",synonyms:[{word:"manual",meaning:"done by hand",meaningVi:"thủ công"},{word:"hands-on",meaning:"involving direct personal involvement",meaningVi:"trực tiếp"},{word:"physically demanding",meaning:"requiring physical effort",meaningVi:"yêu cầu sức lực"}],family:[{word:"labor (n)",meaning:"work",meaningVi:"lao động"},{word:"laborer (n)",meaning:"worker",meaningVi:"lao động công nhân"},{word:"laborious (adj)",meaning:"requiring much effort",meaningVi:"vất vả"}],collocations:[{phrase:"labor-intensive job",meaning:"job needing much work",meaningVi:"công việc tốn sức"},{phrase:"labor-intensive industry",meaning:"industry needing workers",meaningVi:"ngành tốn sức lao động"},{phrase:"labor-intensive process",meaning:"process needing effort",meaningVi:"quá trình tốn sức"}],example:"Agriculture in developing nations remains highly labor-intensive.",exampleVi:"Nông nghiệp ở các nước đang phát triển vẫn rất tốn sức.",mistakes:"Hyphenated before noun: 'labor-intensive work'. | Dùng dấu gạch ngang."},
+{word:"labor-saving",pos:"adj",ipa:"/ˈleɪ.bər ˈseɪ.vɪŋ/",meaning:"reducing work needed",meaningVi:"tiết kiệm sức lao động",synonyms:[{word:"efficient",meaning:"working well, not wasting effort",meaningVi:"hiệu quả"},{word:"automated",meaning:"done by machine",meaningVi:"tự động hóa"},{word:"time-saving",meaning:"saving time",meaningVi:"tiết kiệm thời gian"}],family:[{word:"labor (n)",meaning:"work",meaningVi:"lao động"}],collocations:[{phrase:"labor-saving device",meaning:"machine that reduces work",meaningVi:"thiết bị tiết kiệm sức"},{phrase:"labor-saving technology",meaning:"technology reducing work",meaningVi:"công nghệ tiết kiệm sức"},{phrase:"labor-saving innovation",meaning:"new way to reduce work",meaningVi:"đổi mới tiết kiệm sức"}],example:"Labor-saving technology transformed manufacturing in the 20th century.",exampleVi:"Công nghệ tiết kiệm sức thay đổi sản xuất thế kỷ 20.",mistakes:"Always hyphenated before noun. Refers to devices/tech, not people. | Không bỏ dấu gạch ngang."},
+{word:"lay waste to",pos:"v",ipa:"/leɪ weɪst tuː/",meaning:"completely destroy",meaningVi:"tàn phá hoàn toàn",synonyms:[{word:"devastate",meaning:"destroy severely",meaningVi:"tàn phá"},{word:"destroy",meaning:"ruin completely",meaningVi:"phá hủy"},{word:"ruin",meaning:"damage severely",meaningVi:"tàn tật"}],family:[{word:"waste (n/v)",meaning:"garbage; to use carelessly",meaningVi:"chất thải; lãng phí"},{word:"wasteland (n)",meaning:"barren, empty land",meaningVi:"đất hoang tàn"}],collocations:[{phrase:"lay waste to a city",meaning:"destroy city",meaningVi:"tàn phá thành phố"},{phrase:"lay waste to the land",meaning:"destroy land",meaningVi:"tàn phá đất đai"},{phrase:"lay waste to infrastructure",meaning:"destroy buildings/systems",meaningVi:"tàn phá hạ tầng"}],example:"The prolonged conflict laid waste to the region's infrastructure.",exampleVi:"Cuộc xung đột kéo dài tàn phá hạ tầng khu vực.",mistakes:"Past tense: 'laid waste to' (not 'lay waste'). | Quá khứ: 'laid'."},
+{word:"take a toll on",pos:"v",ipa:"/teɪk ə toʊl ɑːn/",meaning:"harm, damage someone/something",meaningVi:"gây tổn hại, ảnh hưởng xấu",synonyms:[{word:"damage",meaning:"harm",meaningVi:"làm hư hại"},{word:"harm",meaning:"hurt",meaningVi:"làm tổn hại"},{word:"adversely affect",meaning:"have negative effect",meaningVi:"ảnh hưởng tiêu cực"}],family:[{word:"toll (n)",meaning:"a cost or damage",meaningVi:"chi phí; tổn hại"}],collocations:[{phrase:"take a heavy toll",meaning:"cause severe harm",meaningVi:"gây tổn hại nặng nề"},{phrase:"take its toll on health",meaning:"harm health",meaningVi:"tổn hại sức khỏe"},{phrase:"emotional toll",meaning:"psychological damage",meaningVi:"tổn hại tinh thần"}],example:"Years of pollution have taken a heavy toll on marine ecosystems.",exampleVi:"Năm tháng ô nhiễm đã gây tổn hại nặng nề cho hệ sinh thái biển.",mistakes:"Always followed by 'on': take a toll ON something. | Luôn theo sau bởi 'on'."},
+{word:"cutting-edge",pos:"adj",ipa:"/ˈkʌt.ɪŋ ˈedʒ/",meaning:"most modern, newest",meaningVi:"tối tân, hiện đại nhất",synonyms:[{word:"state-of-the-art",meaning:"most advanced",meaningVi:"đương đại nhất"},{word:"innovative",meaning:"introducing new ideas",meaningVi:"đổi mới"},{word:"pioneering",meaning:"first or early in field",meaningVi:"tiên phong"}],family:[{word:"edge (n)",meaning:"outer limit",meaningVi:"mép, cạnh"}],collocations:[{phrase:"cutting-edge technology",meaning:"newest technology",meaningVi:"công nghệ tối tân"},{phrase:"cutting-edge research",meaning:"most recent research",meaningVi:"nghiên cứu tiên tiến"},{phrase:"cutting-edge design",meaning:"newest design",meaningVi:"thiết kế tối tân"}],example:"The lab uses cutting-edge technology to analyze genetic samples.",exampleVi:"Phòng lab sử dụng công nghệ tối tân để phân tích mẫu gen.",mistakes:"Interchangeable with 'state-of-the-art'. Always hyphenated before noun. | Có thể thay thế bằng 'state-of-the-art'."},
+{word:"infectious",pos:"adj",ipa:"/ɪnˈfek.ʃəs/",meaning:"spread through environment",meaningVi:"lây nhiễm (qua môi trường)",synonyms:[{word:"communicable",meaning:"able to be transmitted",meaningVi:"lây truyền được"},{word:"transmissible",meaning:"able to spread",meaningVi:"có thể lây lan"},{word:"spreading",meaning:"becoming widespread",meaningVi:"lan rộng"}],family:[{word:"infect (v)",meaning:"cause disease in",meaningVi:"nhiễm bệnh"},{word:"infection (n)",meaning:"diseased condition",meaningVi:"nhiễm trùng"},{word:"infected (adj)",meaning:"having disease",meaningVi:"bị nhiễm"}],collocations:[{phrase:"infectious disease",meaning:"disease that spreads",meaningVi:"bệnh lây nhiễm"},{phrase:"highly infectious",meaning:"spreads easily",meaningVi:"lây nhiễm cao"},{phrase:"infectious agent",meaning:"thing causing disease",meaningVi:"tác nhân gây bệnh"}],example:"Infectious diseases spread rapidly in overcrowded conditions.",exampleVi:"Bệnh lây nhiễm lây lan nhanh chóng trong điều kiện quá đông.",mistakes:"Infectious = spread via environment. Contagious = via direct contact. | Khác 'contagious'."},
+{word:"contagious",pos:"adj",ipa:"/kənˈteɪ.dʒəs/",meaning:"spread through direct contact",meaningVi:"truyền nhiễm (qua tiếp xúc trực tiếp)",synonyms:[{word:"transmissible",meaning:"able to spread",meaningVi:"lây lan"},{word:"communicable",meaning:"able to be transmitted",meaningVi:"lây truyền"},{word:"catching",meaning:"spreading easily",meaningVi:"dễ lây"}],family:[{word:"contagion (n)",meaning:"spread of disease/influence",meaningVi:"lây lan"}],collocations:[{phrase:"highly contagious",meaning:"spreads easily by contact",meaningVi:"rất dễ lây qua tiếp xúc"},{phrase:"contagious disease",meaning:"disease spreading by contact",meaningVi:"bệnh lây qua tiếp xúc"},{phrase:"contagious laugh",meaning:"laugh that spreads to others",meaningVi:"tiếng cười lây lan"}],example:"The virus proved to be extremely contagious in urban areas.",exampleVi:"Virus rất dễ lây lan trong khu vực thành thị.",mistakes:"Also used figuratively: 'a contagious laugh' = spreads to others easily. | Cũng dùng theo nghĩa bóng."},
+{word:"aspire to",pos:"v",ipa:"/əsˈpaɪər tuː/",meaning:"want to achieve, desire",meaningVi:"khao khát, mong muốn đạt được",synonyms:[{word:"aim for",meaning:"try to achieve",meaningVi:"hướng tới"},{word:"desire",meaning:"want strongly",meaningVi:"mong muốn"},{word:"strive for",meaning:"work hard for",meaningVi:"phấn đấu để"}],family:[{word:"aspiration (n)",meaning:"strong desire",meaningVi:"khát vọng"},{word:"aspiring (adj)",meaning:"wanting to succeed in field",meaningVi:"người mong muốn"}],collocations:[{phrase:"aspire to greatness",meaning:"want to be great",meaningVi:"khao khát vĩ đại"},{phrase:"aspire to become",meaning:"want to be something",meaningVi:"mong muốn trở thành"},{phrase:"aspire to achieve",meaning:"want to accomplish",meaningVi:"mong muốn đạt được"}],example:"Many students aspire to study at prestigious universities abroad.",exampleVi:"Nhiều học sinh mong muốn học ở các đại học danh tiếng nước ngoài.",mistakes:"Followed by 'to + noun/verb': aspire to success / aspire to become. | Theo sau bởi 'to + noun/V'."},
+{word:"aspiration",pos:"n",ipa:"/ˌæs.pəˈreɪ.ʃən/",meaning:"strong desire, ambition",meaningVi:"khát vọng, hoài bão",synonyms:[{word:"ambition",meaning:"strong desire for success",meaningVi:"hoài bão"},{word:"goal",meaning:"aim to achieve",meaningVi:"mục tiêu"},{word:"dream",meaning:"something desired",meaningVi:"giấc mơ"}],family:[{word:"aspire (v)",meaning:"want to achieve",meaningVi:"khao khát"},{word:"aspiring (adj)",meaning:"wanting to succeed",meaningVi:"mong muốn"}],collocations:[{phrase:"career aspirations",meaning:"goals for work",meaningVi:"khát vọng sự nghiệp"},{phrase:"personal aspiration",meaning:"individual goal",meaningVi:"khát vọng cá nhân"},{phrase:"fulfill aspirations",meaning:"achieve goals",meaningVi:"thực hiện khát vọng"}],example:"Education plays a key role in fulfilling personal aspirations.",exampleVi:"Giáo dục đóng vai trò chính yếu trong thực hiện khát vọng cá nhân.",mistakes:"Don't confuse with 'aspiration' (breathing in fluid). | Đừng nhầm với ý nghĩa y tế."},
+{word:"aspiring",pos:"adj",ipa:"/əsˈpaɪ.rɪŋ/",meaning:"wanting to succeed in a field",meaningVi:"người mong muốn trở thành (+ nghề)",synonyms:[{word:"budding",meaning:"just beginning",meaningVi:"sắp phát triển"},{word:"would-be",meaning:"wanting to be",meaningVi:"muốn là"},{word:"hopeful",meaning:"full of hope",meaningVi:"đầy hy vọng"}],family:[{word:"aspire (v)",meaning:"desire strongly",meaningVi:"khao khát"},{word:"aspiration (n)",meaning:"strong goal",meaningVi:"khát vọng"}],collocations:[{phrase:"aspiring actress",meaning:"woman wanting to be actress",meaningVi:"cô gái muốn trở thành diễn viên"},{phrase:"aspiring writer",meaning:"person wanting to be writer",meaningVi:"người muốn trở thành nhà văn"},{phrase:"aspiring entrepreneur",meaning:"person wanting business career",meaningVi:"người muốn trở thành doanh nhân"}],example:"The program supports aspiring scientists from underprivileged backgrounds.",exampleVi:"Chương trình hỗ trợ các nhà khoa học trẻ từ hoàn cảnh khó khăn.",mistakes:"Aspiring + profession = someone wanting to succeed in that profession. | + nghề = người muốn thành công."},
+{word:"detrimental",pos:"adj",ipa:"/ˌdet.rɪˈmen.təl/",meaning:"harmful, damaging",meaningVi:"có hại, gây tổn hại",synonyms:[{word:"harmful",meaning:"causing damage",meaningVi:"có hại"},{word:"adverse",meaning:"unfavorable",meaningVi:"bất lợi"},{word:"damaging",meaning:"causing harm",meaningVi:"gây tổn hại"}],family:[{word:"detriment (n)",meaning:"harm, disadvantage",meaningVi:"tổn hại, bất lợi"},{word:"detrimentally (adv)",meaning:"in harmful way",meaningVi:"một cách có hại"}],collocations:[{phrase:"detrimental effect",meaning:"harmful result",meaningVi:"ảnh hưởng có hại"},{phrase:"detrimental to health",meaning:"harmful to well-being",meaningVi:"có hại cho sức khỏe"},{phrase:"prove detrimental",meaning:"turn out harmful",meaningVi:"chứng tỏ có hại"}],example:"Air pollution has a detrimental effect on respiratory health.",exampleVi:"Ô nhiễm không khí có ảnh hưởng có hại đến sức khỏe hô hấp.",mistakes:"Formal synonym of 'harmful'. Often followed by 'to'. | Thường theo sau bởi 'to'."},
+{word:"adverse",pos:"adj",ipa:"/ˈæd.vɝːs/",meaning:"harmful, unfavorable",meaningVi:"bất lợi, có hại",synonyms:[{word:"harmful",meaning:"causing damage",meaningVi:"có hại"},{word:"detrimental",meaning:"causing harm",meaningVi:"có tác hại"},{word:"unfavorable",meaning:"not good",meaningVi:"không thuận lợi"}],family:[{word:"adversely (adv)",meaning:"in harmful way",meaningVi:"một cách bất lợi"},{word:"adversity (n)",meaning:"difficulty, hardship",meaningVi:"khó khăn"}],collocations:[{phrase:"adverse effect",meaning:"harmful result",meaningVi:"tác động xấu"},{phrase:"adverse conditions",meaning:"unfavorable situation",meaningVi:"điều kiện không thuận lợi"},{phrase:"adverse reaction",meaning:"negative response",meaningVi:"phản ứng tiêu cực"}],example:"Adverse weather conditions delayed the construction project significantly.",exampleVi:"Điều kiện thời tiết xấu đã làm trễ tiến độ dự án xây dựng.",mistakes:"'Adverse' often collocates with 'effect/conditions/reaction' in IELTS. | Thường dùng với 'effect/conditions'."},
+{word:"set off",pos:"v",ipa:"/set ɔːf/",meaning:"begin a journey, depart",meaningVi:"khởi hành, lên đường",synonyms:[{word:"depart",meaning:"leave",meaningVi:"rời đi"},{word:"embark",meaning:"start journey",meaningVi:"lên đường"},{word:"head out",meaning:"start going",meaningVi:"khởi hành"}],family:[{word:"set (v)",meaning:"put in place",meaningVi:"đặt"}],collocations:[{phrase:"set off on a journey",meaning:"start traveling",meaningVi:"khởi hành một chuyến"},{phrase:"set off early",meaning:"leave early",meaningVi:"khởi hành sớm"},{phrase:"set off for",meaning:"leave towards",meaningVi:"khởi hành tới"}],example:"The expedition set off at dawn to reach the summit by midday.",exampleVi:"Đoàn thám hiểm khởi hành lúc bình minh để đạt đỉnh vào trưa.",mistakes:"Also means 'trigger': 'set off an alarm'. Context determines meaning. | Cũng có nghĩa 'kích hoạt'."},
+{word:"vivid",pos:"adj",ipa:"/ˈvɪv.ɪd/",meaning:"bright, striking, clear",meaningVi:"sống động, rõ nét",synonyms:[{word:"vibrant",meaning:"bright and striking",meaningVi:"rực rỡ"},{word:"graphic",meaning:"clear, realistic",meaningVi:"chân thực"},{word:"striking",meaning:"attractive to eye",meaningVi:"nổi bật"}],family:[{word:"vividly (adv)",meaning:"in vivid manner",meaningVi:"một cách sống động"},{word:"vividness (n)",meaning:"quality of being vivid",meaningVi:"tính sống động"}],collocations:[{phrase:"vivid description",meaning:"clear, detailed account",meaningVi:"mô tả sinh động"},{phrase:"vivid memory",meaning:"clear, strong recollection",meaningVi:"ký ức sống động"},{phrase:"vivid imagination",meaning:"active creative mind",meaningVi:"trí tưởng tượng phong phú"}],example:"The author provides a vivid description of life in ancient Rome.",exampleVi:"Tác giả mô tả sinh động cuộc sống ở La Mã cổ đại.",mistakes:"'Vividly remember' = remember clearly. Opposite: 'vaguely remember'. | 'Vividly' = rõ mồn một, ngược lại 'vaguely'."},
+{word:"vaguely",pos:"adv",ipa:"/ˈveɪɡ.li/",meaning:"in unclear or hazy way",meaningVi:"một cách mơ hồ, không rõ",synonyms:[{word:"dimly",meaning:"not clearly",meaningVi:"tối tăm"},{word:"faintly",meaning:"weakly",meaningVi:"yếu ớt"},{word:"indistinctly",meaning:"unclearly",meaningVi:"không rõ ràng"}],family:[{word:"vague (adj)",meaning:"unclear",meaningVi:"mơ hồ"},{word:"vagueness (n)",meaning:"quality of being vague",meaningVi:"tính mơ hồ"}],collocations:[{phrase:"vaguely remember",meaning:"dimly recall",meaningVi:"nhớ mơ hồ"},{phrase:"vaguely familiar",meaning:"seems known but unclear",meaningVi:"quen lạ một chút"},{phrase:"vaguely aware",meaning:"dimly conscious",meaningVi:"lờ mờ ý thức"}],example:"He could only vaguely remember the details of the experiment.",exampleVi:"Anh ấy chỉ nhớ mơ hồ các chi tiết của thí nghiệm.",mistakes:"Opposite of 'vividly remember'. 'Vaguely' = not clearly. | Ngược lại 'vividly'."},
+{word:"hold spellbound",pos:"v",ipa:"/hoʊld ˈspel.baʊnd/",meaning:"fascinate completely, captivate",meaningVi:"hớp hồn, làm mê hoặc",synonyms:[{word:"captivate",meaning:"attract and hold attention",meaningVi:"thu hút"},{word:"mesmerize",meaning:"completely fascinate",meaningVi:"mê hoặc"},{word:"enchant",meaning:"delight",meaningVi:"làm phấn khích"}],family:[{word:"spellbound (adj)",meaning:"fascinated, entranced",meaningVi:"bị mê hoặc"}],collocations:[{phrase:"hold the audience spellbound",meaning:"completely fascinate listeners",meaningVi:"giữ khán giả mê hoặc"},{phrase:"held spellbound by",meaning:"fascinated by",meaningVi:"bị mê hoặc bởi"},{phrase:"spellbound listeners",meaning:"fascinated audience",meaningVi:"khán giả bị mê hoặc"}],example:"The lecturer held the audience spellbound with her discoveries.",exampleVi:"Giảng viên đã hớp hồn khán giả với những phát hiện của cô.",mistakes:"Structure: hold + someone + spellbound. Passive: be held spellbound BY. | Cấu trúc: hold + ai + spellbound."},
+{word:"plateau",pos:"v",ipa:"/pləˈtoʊ/",meaning:"level off, stop increasing",meaningVi:"chững lại, đạt mức ổn định",synonyms:[{word:"level off",meaning:"stop going up",meaningVi:"chặn lại"},{word:"stabilize",meaning:"become steady",meaningVi:"ổn định"},{word:"flatten",meaning:"become level",meaningVi:"bằng phẳng"}],family:[{word:"plateau (n)",meaning:"flat highland area",meaningVi:"cao nguyên"}],collocations:[{phrase:"reach a plateau",meaning:"stop increasing",meaningVi:"đạt mức ổn định"},{phrase:"plateau at",meaning:"level off at amount",meaningVi:"chững lại ở mức"},{phrase:"sales plateau",meaning:"sales stop growing",meaningVi:"doanh số chừng lại"}],example:"Population growth plateaued at around 8 million in the 1990s.",exampleVi:"Tăng trưởng dân số chừng lại ở khoảng 8 triệu người vào những năm 1990.",mistakes:"As verb: 'plateau at + number'. As noun: 'reach a plateau'. | Động từ: 'plateau at'."},
+{word:"bask in",pos:"v",ipa:"/bæsk ɪn/",meaning:"enjoy warmth, success, or praise",meaningVi:"tắm mình trong, đắm chìm trong",synonyms:[{word:"revel in",meaning:"take great pleasure in",meaningVi:"hưởng thụ"},{word:"luxuriate in",meaning:"enjoy comfort",meaningVi:"tận hưởng"},{word:"enjoy",meaning:"take pleasure in",meaningVi:"thích thú"}],family:[{word:"basking (adj)",meaning:"lying in sun",meaningVi:"nằm dưới nắng"}],collocations:[{phrase:"bask in the sun",meaning:"lie in sunshine",meaningVi:"tắm nắng"},{phrase:"bask in glory",meaning:"enjoy fame",meaningVi:"hưởng vinh quang"},{phrase:"bask in success",meaning:"enjoy achievement",meaningVi:"hưởng thành công"}],example:"After the discovery, the team basked in international recognition.",exampleVi:"Sau phát hiện, nhóm tận hưởng sự công nhận quốc tế.",mistakes:"Literally: enjoy warmth/sun. Figuratively: enjoy praise/success. | Vừa thực, vừa bóng."},
+{word:"cortisol",pos:"n",ipa:"/ˈkɔːr.tɪ.sɑːl/",meaning:"stress hormone",meaningVi:"hormone stress",synonyms:[{word:"stress hormone",meaning:"hormone released under stress",meaningVi:"hormone từ stress"}],family:[{word:"cortisone (n)",meaning:"hormone from cortisol",meaningVi:"corticone"}],collocations:[{phrase:"cortisol levels",meaning:"amount of cortisol",meaningVi:"mức cortisol"},{phrase:"release cortisol",meaning:"produce cortisol",meaningVi:"tiết cortisol"},{phrase:"high cortisol",meaning:"excessive stress hormone",meaningVi:"cortisol cao"}],example:"Chronic stress leads to elevated cortisol levels in the body.",exampleVi:"Stress mãn tính dẫn đến mức cortisol cao trong cơ thể.",mistakes:"Remember: cortisol = stress hormone. High cortisol = negative health. | Cortisol = hormone stress."},
+{word:"dopamine",pos:"n",ipa:"/ˈdoʊ.pə.miːn/",meaning:"pleasure hormone, reward chemical",meaningVi:"hormone khoái cảm",synonyms:[{word:"pleasure hormone",meaning:"hormone that produces pleasure",meaningVi:"hormone khoái lạc"},{word:"reward chemical",meaning:"brain chemical for reward",meaningVi:"hóa chất phần thưởng"}],family:[],collocations:[{phrase:"dopamine release",meaning:"production of dopamine",meaningVi:"tiết dopamine"},{phrase:"dopamine levels",meaning:"amount of dopamine",meaningVi:"mức dopamine"},{phrase:"dopamine surge",meaning:"sudden dopamine increase",meaningVi:"sự tăng đột ngột dopamine"}],example:"Dopamine is released when we achieve goals or experience pleasure.",exampleVi:"Dopamine được tiết khi chúng ta đạt mục tiêu hoặc trải nghiệm khoái cảm.",mistakes:"Dopamine = pleasure/reward. Don't confuse with serotonin (mood). | Khác serotonin."},
+{word:"oxytocin",pos:"n",ipa:"/ˌɑːk.sɪˈtoʊ.sɪn/",meaning:"love hormone, bonding hormone",meaningVi:"hormone tình yêu",synonyms:[{word:"love hormone",meaning:"hormone promoting bonding",meaningVi:"hormone tình yêu"},{word:"bonding hormone",meaning:"hormone creating connection",meaningVi:"hormone liên kết"}],family:[],collocations:[{phrase:"release oxytocin",meaning:"produce oxytocin",meaningVi:"tiết oxytocin"},{phrase:"oxytocin levels",meaning:"amount of oxytocin",meaningVi:"mức oxytocin"},{phrase:"oxytocin boost",meaning:"increase in oxytocin",meaningVi:"tăng oxytocin"}],example:"Physical touch triggers the release of oxytocin, the love hormone.",exampleVi:"Tiếp xúc vật lý kích hoạt tiết oxytocin, hormone tình yêu.",mistakes:"Oxytocin = love/bonding. Don't confuse with 'oxycontin' (drug). | Không nhầm 'oxycontin'."},
+{word:"endorphin",pos:"n",ipa:"/enˈdɔːr.fɪn/",meaning:"natural painkiller hormone",meaningVi:"thuốc giảm đau tự nhiên",synonyms:[{word:"natural painkiller",meaning:"body's own pain relief",meaningVi:"thuốc giảm đau tự nhiên"}],family:[],collocations:[{phrase:"endorphin release",meaning:"production of endorphins",meaningVi:"tiết endorphin"},{phrase:"endorphin rush",meaning:"sudden endorphin surge",meaningVi:"sự tăng đột ngột endorphin"},{phrase:"natural endorphins",meaning:"body's own endorphins",meaningVi:"endorphin tự nhiên của cơ thể"}],example:"Exercise stimulates the release of endorphins, reducing pain naturally.",exampleVi:"Tập thể dục kích thích tiết endorphin, giảm đau tự nhiên.",mistakes:"Endorphins = natural painkillers from exercise/laughter. | Endorphin = giảm đau tự nhiên."},
+{word:"serotonin",pos:"n",ipa:"/ˌser.əˈtoʊ.nɪn/",meaning:"mood stabilizer hormone",meaningVi:"chất ổn định tâm trạng",synonyms:[{word:"mood stabilizer",meaning:"hormone regulating mood",meaningVi:"chất ổn định tâm trạng"}],family:[],collocations:[{phrase:"serotonin levels",meaning:"amount of serotonin",meaningVi:"mức serotonin"},{phrase:"boost serotonin",meaning:"increase serotonin",meaningVi:"tăng serotonin"},{phrase:"low serotonin",meaning:"insufficient serotonin",meaningVi:"serotonin thấp"}],example:"Low serotonin levels are associated with depression and anxiety.",exampleVi:"Mức serotonin thấp liên quan đến trầm cảm và lo âu.",mistakes:"Serotonin = mood stabilizer. Low serotonin → depression. | Thấp serotonin = trầm cảm."},
+{word:"hedonistic treadmill",pos:"n",ipa:"/hedəˈnɪstɪk ˈtredmɪl/",meaning:"happiness set point theory",meaningVi:"vòng quay hạnh phúc cố định",synonyms:[{word:"hedonic adaptation",meaning:"return to baseline happiness",meaningVi:"thích ứng với hạnh phúc"},{word:"happiness set point",meaning:"person's baseline happiness level",meaningVi:"mức hạnh phúc cơ bản"}],family:[{word:"hedonism (n)",meaning:"pursuit of pleasure",meaningVi:"chủ nghĩa khoái lạc"},{word:"hedonistic (adj)",meaning:"focused on pleasure",meaningVi:"hướng tới khoái lạc"}],collocations:[{phrase:"hedonistic treadmill theory",meaning:"idea about happiness",meaningVi:"lý thuyết về hạnh phúc"},{phrase:"hedonic adaptation",meaning:"getting used to good/bad",meaningVi:"thích ứng hạnh phúc"},{phrase:"return to baseline",meaning:"go back to normal happiness",meaningVi:"quay trở lại mức bình thường"}],example:"The hedonistic treadmill suggests happiness returns to baseline after major events.",exampleVi:"Lý thuyết cho rằng hạnh phúc quay trở lại mức bình thường sau sự kiện lớn.",mistakes:"Key IELTS: positive/negative events only temporarily affect happiness. | Sự kiện chỉ ảnh hưởng tạm thời."},
+{word:"placebo effect",pos:"n",ipa:"/pləˈsiː.boʊ ɪˈfekt/",meaning:"healing from belief in treatment",meaningVi:"hiệu ứng giả dược",synonyms:[{word:"placebo response",meaning:"positive response to fake treatment",meaningVi:"phản ứng giả dược"},{word:"sugar pill effect",meaning:"effect of belief in fake pill",meaningVi:"tác dụng của viên thuốc giả"}],family:[{word:"placebo (n)",meaning:"fake/inert treatment",meaningVi:"giả dược"}],collocations:[{phrase:"placebo effect",meaning:"improvement from fake treatment",meaningVi:"hiệu ứng giả dược"},{phrase:"placebo group",meaning:"group receiving fake treatment",meaningVi:"nhóm dùng giả dược"},{phrase:"placebo-controlled",meaning:"study with placebo group",meaningVi:"được kiểm soát bằng giả dược"}],example:"The placebo effect demonstrates the power of belief in medical treatment.",exampleVi:"Hiệu ứng giả dược cho thấy sức mạnh của niềm tin trong điều trị.",mistakes:"Placebo = fake treatment that works from belief. Important in research! | Giả dược = có hiệu do tin tưởng."},
+{word:"succumb to",pos:"v",ipa:"/səˈkʌm tuː/",meaning:"die from; give in to",meaningVi:"chết vì; bị khuất phục bởi",synonyms:[{word:"yield to",meaning:"give in to",meaningVi:"chịu thua"},{word:"give in to",meaning:"surrender to",meaningVi:"đầu hàng"},{word:"fall victim to",meaning:"be harmed by",meaningVi:"trở thành nạn nhân"}],family:[],collocations:[{phrase:"succumb to pressure",meaning:"give in to force",meaningVi:"chịu áp lực"},{phrase:"succumb to illness",meaning:"die from disease",meaningVi:"chết vì bệnh"},{phrase:"succumb to temptation",meaning:"give in to desire",meaningVi:"chịu cơn cám dỗ"}],example:"Many patients succumbed to the disease before a cure was found.",exampleVi:"Nhiều bệnh nhân chết vì bệnh trước khi tìm được cách chữa.",mistakes:"Can mean die from (illness) or give in to (pressure). Context determines. | Cả 'chết' lẫn 'chịu thua'."},
+{word:"perplex",pos:"v",ipa:"/pərˈpleks/",meaning:"confuse greatly",meaningVi:"làm bối rối, khó hiểu",synonyms:[{word:"puzzle",meaning:"confuse",meaningVi:"làm bối rối"},{word:"confuse",meaning:"make unclear",meaningVi:"làm bối rối"},{word:"baffle",meaning:"completely puzzle",meaningVi:"làm hoàn toàn bối rối"}],family:[{word:"perplexed (adj)",meaning:"confused",meaningVi:"bối rối"},{word:"perplexing (adj)",meaning:"confusing",meaningVi:"khó hiểu"},{word:"perplexity (n)",meaning:"state of confusion",meaningVi:"sự bối rối"}],collocations:[{phrase:"deeply perplexed",meaning:"very confused",meaningVi:"rất bối rối"},{phrase:"perplexing question",meaning:"confusing question",meaningVi:"câu hỏi khó hiểu"},{phrase:"perplexed by",meaning:"confused by",meaningVi:"bối rối về"}],example:"The contradictory evidence perplexed even experienced researchers.",exampleVi:"Bằng chứng mâu thuẫn làm bối rối cả các nhà nghiên cứu có kinh nghiệm.",mistakes:"Perplexed = person confused. Perplexing = thing causing confusion. | Perplexed (người), perplexing (vật)."},
+{word:"perplexed",pos:"adj",ipa:"/pərˈplekst/",meaning:"confused, puzzled",meaningVi:"bối rối, khó hiểu",synonyms:[{word:"puzzled",meaning:"confused",meaningVi:"bối rối"},{word:"confused",meaning:"unable to understand",meaningVi:"bối rối"},{word:"bewildered",meaning:"very confused",meaningVi:"hoang mang"}],family:[{word:"perplex (v)",meaning:"confuse",meaningVi:"làm bối rối"},{word:"perplexing (adj)",meaning:"confusing",meaningVi:"khó hiểu"}],collocations:[{phrase:"look perplexed",meaning:"appear confused",meaningVi:"trông bối rối"},{phrase:"deeply perplexed",meaning:"very confused",meaningVi:"rất bối rối"},{phrase:"perplexed expression",meaning:"confused face",meaningVi:"biểu cảm bối rối"}],example:"Students were perplexed by the complexity of the research findings.",exampleVi:"Sinh viên bối rối trước độ phức tạp của các phát hiện nghiên cứu.",mistakes:"Interchangeable with 'puzzled' in most IELTS contexts. | Có thể thay 'puzzled'."},
+{word:"state-of-the-art",pos:"adj",ipa:"/ˌsteɪt əv ðiː ˈɑːrt/",meaning:"most modern, latest",meaningVi:"tối tân, hiện đại nhất",synonyms:[{word:"cutting-edge",meaning:"newest",meaningVi:"tối tân"},{word:"innovative",meaning:"introducing new ideas",meaningVi:"đổi mới"},{word:"advanced",meaning:"highly developed",meaningVi:"tiên tiến"}],family:[],collocations:[{phrase:"state-of-the-art technology",meaning:"newest technology",meaningVi:"công nghệ tối tân"},{phrase:"state-of-the-art facility",meaning:"modern building/equipment",meaningVi:"cơ sở hiện đại"},{phrase:"state-of-the-art equipment",meaning:"newest machines",meaningVi:"thiết bị tối tân"}],example:"The hospital is equipped with state-of-the-art medical technology.",exampleVi:"Bệnh viện được trang bị công nghệ y tế tối tân.",mistakes:"Always hyphenated before noun. Interchangeable with 'cutting-edge'. | Luôn dùng dấu gạch ngang."},
+{word:"vertical development",pos:"n",ipa:"/ˈvɝː.tɪ.kəl dɪˈvel.əp.mənt/",meaning:"development upward, building height",meaningVi:"phát triển theo chiều cao",synonyms:[{word:"upward development",meaning:"growth in height",meaningVi:"phát triển lên cao"},{word:"high-rise development",meaning:"tall building construction",meaningVi:"phát triển tòa nhà cao tầng"}],family:[{word:"vertical (adj)",meaning:"upright, perpendicular",meaningVi:"thẳng đứng"},{word:"vertically (adv)",meaning:"in vertical direction",meaningVi:"theo chiều thẳng đứng"}],collocations:[{phrase:"vertical development",meaning:"building upward",meaningVi:"phát triển chiều cao"},{phrase:"vertical expansion",meaning:"growing taller",meaningVi:"mở rộng chiều cao"},{phrase:"vertical growth",meaning:"increase in height",meaningVi:"tăng trưởng chiều cao"}],example:"Cities are increasingly focusing on vertical development to accommodate growing populations.",exampleVi:"Các thành phố ngày càng tập trung vào phát triển chiều cao để đáp ứng dân số tăng.",mistakes:"Opposite of 'horizontal development' (spreading out). | Ngược lại 'horizontal development'."},
+{word:"horizontal development",pos:"n",ipa:"/ˌhɔːr.ɪˈzɑːn.təl dɪˈvel.əp.mənt/",meaning:"development outward, land area expansion",meaningVi:"phát triển theo chiều rộng (hạ tầng;diện tích đất)",synonyms:[{word:"outward development",meaning:"expansion sideways",meaningVi:"phát triển ra ngoài"},{word:"lateral development",meaning:"sideways growth",meaningVi:"tăng trưởng bên cạnh"}],family:[{word:"horizontal (adj)",meaning:"parallel to ground",meaningVi:"song song với mặt đất"},{word:"horizontally (adv)",meaning:"in horizontal direction",meaningVi:"theo chiều ngang"}],collocations:[{phrase:"horizontal development",meaning:"spreading out",meaningVi:"phát triển chiều rộng"},{phrase:"horizontal expansion",meaning:"growing wider",meaningVi:"mở rộng chiều rộng"},{phrase:"horizontal growth",meaning:"increase in area",meaningVi:"tăng trưởng diện tích"}],example:"Horizontal development requires more land but preserves green spaces.",exampleVi:"Phát triển chiều rộng cần nhiều đất hơn nhưng bảo tồn không gian xanh.",mistakes:"Opposite of 'vertical development' (building up). | Ngược lại 'vertical development'."},
+];
+
+// ===== GAME STATE =====
+let state={
+  screen:'menu',currentPart:0,questionIndex:0,questions:[],
+  score:0,combo:0,bestCombo:0,xp:0,level:1,timer:0,timerInterval:null,
+  difficulty:'easy',answered:false,wrongWords:[],
+  totalCorrect:0,totalWrong:0,partScores:{},
+  miniGame:null,miniState:{},
+  pronunciationEnabled:true
+};
+
+function save(){try{localStorage.setItem('v4a_state',JSON.stringify({xp:state.xp,level:state.level,bestCombo:state.bestCombo,difficulty:state.difficulty,partScores:state.partScores,wrongWords:state.wrongWords.map(w=>w.word)}));}catch(e){}}
+function load(){try{const d=JSON.parse(localStorage.getItem('v4a_state'));if(d){state.xp=d.xp||0;state.level=d.level||1;state.bestCombo=d.bestCombo||0;state.difficulty=d.difficulty||'easy';state.partScores=d.partScores||{};state.wrongWords=(d.wrongWords||[]).map(w=>VOCAB.find(v=>v.word===w)).filter(Boolean);updateMenuStats();}}catch(e){}}
+
+// ===== PRONUNCIATION (Web Speech API) =====
+function pronounce(word){
+  if(!state.pronunciationEnabled)return;
+  const utterance=new SpeechSynthesisUtterance(word);
+  utterance.rate=0.8;utterance.pitch=1;utterance.volume=1;
+  const voices=window.speechSynthesis.getVoices();
+  const enVoice=voices.find(v=>v.lang.includes('en'));
+  if(enVoice)utterance.voice=enVoice;
+  window.speechSynthesis.cancel();window.speechSynthesis.speak(utterance);
+}
+
+// ===== AUDIO (Web Audio API) =====
+let audioCtx;
+function getAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+function playTone(freq,dur,type='sine',vol=.15){const c=getAudio(),o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.value=freq;g.gain.value=vol;o.connect(g);g.connect(c.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,c.currentTime+dur);o.stop(c.currentTime+dur);}
+function sfxCorrect(){playTone(523,.1);setTimeout(()=>playTone(659,.1),100);setTimeout(()=>playTone(784,.15),200);}
+function sfxWrong(){playTone(200,.2,'square',.1);setTimeout(()=>playTone(180,.3,'square',.08),150);}
+function sfxCombo(){playTone(784,.08);setTimeout(()=>playTone(988,.08),80);setTimeout(()=>playTone(1175,.15),160);setTimeout(()=>playTone(1319,.2),240);}
+
+// ===== FIREWORKS =====
+const fwCanvas=document.getElementById('fireworks');
+const fwCtx=fwCanvas.getContext('2d');
+let particles=[];
+function resizeFW(){fwCanvas.width=fwCanvas.offsetWidth;fwCanvas.height=fwCanvas.offsetHeight;}
+window.addEventListener('resize',resizeFW);resizeFW();
+
+class Particle{
+  constructor(x,y,color,size){this.x=x;this.y=y;this.color=color;this.size=size||3;
+  const angle=Math.random()*Math.PI*2;const speed=Math.random()*6+2;
+  this.vx=Math.cos(angle)*speed;this.vy=Math.sin(angle)*speed;this.alpha=1;this.decay=Math.random()*.02+.015;this.gravity=.05;}
+  update(){this.x+=this.vx;this.y+=this.vy;this.vy+=this.gravity;this.alpha-=this.decay;}
+  draw(ctx){ctx.save();ctx.globalAlpha=this.alpha;ctx.fillStyle=this.color;ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fill();ctx.restore();}
+}
+
+function firework(x,y,count,colors){
+  if(!x)x=fwCanvas.width*(.2+Math.random()*.6);
+  if(!y)y=fwCanvas.height*(.2+Math.random()*.4);
+  if(!colors)colors=['#ec4899','#2563eb','#fff','#f472b6','#60a5fa'];
+  for(let i=0;i<(count||40);i++){particles.push(new Particle(x,y,colors[Math.floor(Math.random()*colors.length)],Math.random()*3+1));}
+}
+function bigFirework(){for(let i=0;i<3;i++)setTimeout(()=>firework(null,null,60),i*200);}
+
+let fwRunning=false;
+function fwLoop(){
+  if(particles.length===0){fwRunning=false;fwCtx.clearRect(0,0,fwCanvas.width,fwCanvas.height);return;}
+  fwRunning=true;
+  fwCtx.clearRect(0,0,fwCanvas.width,fwCanvas.height);
+  particles=particles.filter(p=>{p.update();if(p.alpha>0){p.draw(fwCtx);return true;}return false;});
+  requestAnimationFrame(fwLoop);
+}
+function triggerFireworks(big){
+  if(big)bigFirework();else firework();
+  if(!fwRunning)fwLoop();
+}
+
+function showXPPop(amount,x,y){
+  const el=document.createElement('div');el.className='xp-pop';el.textContent=`+${amount} XP`;
+  el.style.left=(x||window.innerWidth/2)+'px';el.style.top=(y||window.innerHeight/2)+'px';
+  document.body.appendChild(el);setTimeout(()=>el.remove(),1000);
+}
+function showStreakText(text){
+  const el=document.createElement('div');el.className='streak-text';el.textContent=text;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),900);
+}
+
+// ===== SCREENS =====
+function showScreen(name){
+  ['menu','game','vocab','mini','results'].forEach(s=>{document.getElementById('screen-'+s).style.display=s===name?'':'none';});
+  state.screen=name;
+}
+
+function goMenu(){
+  clearInterval(state.timerInterval);showScreen('menu');updateMenuStats();
+}
+
+function updateMenuStats(){
+  const ms=document.getElementById('menuStats');
+  if(state.xp>0||state.level>1){ms.style.display='';document.getElementById('menuXP').textContent=state.xp;document.getElementById('menuLevel').textContent=state.level;document.getElementById('menuBest').textContent=state.bestCombo;}
+  else ms.style.display='none';
+  document.getElementById('diffBtn').textContent=state.difficulty==='easy'?'⚡ Easy':'💀 Hard';
+}
+
+function toggleDifficulty(){state.difficulty=state.difficulty==='easy'?'hard':'easy';save();updateMenuStats();}
+function resetAll(){state.xp=0;state.level=1;state.bestCombo=0;state.partScores={};state.wrongWords=[];localStorage.removeItem('v4a_state');updateMenuStats();}
+
+// ===== QUESTION GENERATION =====
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function generateMCQ_EnglishToVietnamese(vocab){
+  const distractors=shuffle(VOCAB.filter(v=>v.word!==vocab.word)).slice(0,3);
+  const options=shuffle([{text:vocab.meaningVi,correct:true},...distractors.map(d=>({text:d.meaningVi,correct:false}))]);
+  return{type:'mcq',vocab,question:`What does "<strong>${vocab.word}</strong>" (${vocab.pos}) mean in Vietnamese?`,options};
+}
+
+function generateMCQ_VietnameseToEnglish(vocab){
+  const distractors=shuffle(VOCAB.filter(v=>v.word!==vocab.word)).slice(0,3);
+  const options=shuffle([{text:vocab.word,correct:true},...distractors.map(d=>({text:d.word,correct:false}))]);
+  return{type:'mcq',vocab,question:`Which word means: <strong>${vocab.meaningVi}</strong> (${vocab.pos})?`,options};
+}
+
+function generateFIB(vocab){
+  const sentence=vocab.example.replace(new RegExp(vocab.word.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'),'______');
+  return{type:'fib',vocab,question:`Fill in the blank:`,sentence,answer:vocab.word};
+}
+
+function generateQuestions(part){
+  let words=shuffle([...VOCAB]);
+  if(state.wrongWords.length>0){
+    const extra=shuffle(state.wrongWords).slice(0,Math.min(8,state.wrongWords.length));
+    words=[...extra,...words.filter(w=>!extra.includes(w))];
+  }
+  let qs=[];
+  if(part===1)qs=words.map(w=>generateMCQ_EnglishToVietnamese(w));
+  else if(part===2)qs=words.map(w=>generateMCQ_VietnameseToEnglish(w));
+  else if(part===3)qs=words.map(w=>generateFIB(w));
+  else if(part===4)qs=words.map((w,i)=>i%3===0?generateMCQ_EnglishToVietnamese(w):i%3===1?generateMCQ_VietnameseToEnglish(w):generateFIB(w));
+  else if(part===5){
+    qs=words.map((w,i)=>{
+      if(i%2===0)return generateMCQ_VietnameseToEnglish(w);
+      else return generateMCQ_EnglishToVietnamese(w);
+    });
+  }
+  return qs;
+}
+
+// ===== START PART =====
+function startPart(part){
+  state.currentPart=part;state.questionIndex=0;state.score=0;state.combo=0;
+  state.totalCorrect=0;state.totalWrong=0;state.answered=false;state.timer=0;
+  state.questions=generateQuestions(part);
+  clearInterval(state.timerInterval);
+  state.timerInterval=setInterval(()=>{state.timer++;document.getElementById('timerVal').textContent=state.timer;
+    if(state.difficulty==='hard'&&state.timer>15&&!state.answered){skipQuestion();}
+    if(state.difficulty==='hard'&&state.timer>10){document.getElementById('timerDisplay').classList.add('timer-urgent');}
+    else{document.getElementById('timerDisplay').classList.remove('timer-urgent');}
+  },1000);
+  showScreen('game');
+  document.getElementById('partLabel').textContent=['','🧠 Part 1 – Multiple Choice (EN→VI)','🇻🇳 Part 2 – Vietnamese→English','✍️ Part 3 – Fill in the Blank','🔀 Part 4 – Mixed Mode','🧪 Part 5 – Master Test'][part];
+  updateGameUI();renderQuestion();
+}
+
+function updateGameUI(){
+  document.getElementById('scoreDisplay').textContent=state.score;
+  document.getElementById('comboDisplay').textContent=state.combo;
+  document.getElementById('xpDisplay').textContent=state.xp;
+  const pct=((state.questionIndex)/state.questions.length*100);
+  document.getElementById('progressFill').style.width=pct+'%';
+}
+
+function renderQuestion(){
+  state.answered=false;state.timer=0;
+  document.getElementById('explanationArea').style.display='none';
+  const q=state.questions[state.questionIndex];
+  const area=document.getElementById('questionArea');
+  area.className='card fade-in';
+  const num=state.questionIndex+1;const total=state.questions.length;
+
+  if(q.type==='mcq'){
+    area.innerHTML=`<p class="text-sm font-bold mb-1" style="color:var(--gray)">Question ${num}/${total}</p>
+    <p class="font-bold text-lg mb-4" style="color:var(--text)">${q.question}</p>
+    <div class="flex flex-col gap-3" id="optionsArea">${q.options.map((o,i)=>`<button class="option-btn" onclick="answerMCQ(${i})" id="opt${i}">${o.text}</button>`).join('')}</div>`;
+  }else{
+    area.innerHTML=`<p class="text-sm font-bold mb-1" style="color:var(--gray)">Question ${num}/${total}</p>
+    <p class="font-bold text-lg mb-2" style="color:var(--text)">${q.question}</p>
+    <p class="mb-4" style="color:var(--text);line-height:1.8">${q.sentence}</p>
+    <form onsubmit="answerFIB(event)" class="flex gap-2 items-center flex-wrap">
+    <label for="fibInput" class="sr-only">Your answer</label>
+    <input id="fibInput" class="fill-input" type="text" placeholder="Type your answer..." autocomplete="off" autofocus>
+    <button type="submit" class="btn btn-sm btn-primary">Check ✓</button></form>`;
+  }
+}
+
+function answerMCQ(idx){
+  if(state.answered)return;state.answered=true;
+  const q=state.questions[state.questionIndex];
+  const correct=q.options[idx].correct;
+  const btns=document.querySelectorAll('.option-btn');
+  btns.forEach((b,i)=>{b.disabled=true;if(q.options[i].correct)b.classList.add('correct');});
+  if(!correct){btns[idx].classList.add('wrong');btns[idx].classList.add('shake');}
+  processAnswer(correct,q.vocab);
+}
+
+function answerFIB(e){
+  e.preventDefault();if(state.answered)return;state.answered=true;
+  const q=state.questions[state.questionIndex];
+  const input=document.getElementById('fibInput');
+  const val=input.value.trim().toLowerCase();
+  const ans=q.answer.toLowerCase();
+  const correct=val===ans||ans.includes(val)&&val.length>3;
+  input.style.borderColor=correct?'var(--green)':'var(--red)';
+  input.disabled=true;
+  if(!correct){
+    const hint=document.createElement('p');hint.className='mt-2 font-bold';hint.style.color='var(--green)';
+    hint.textContent=`✅ Correct answer: ${q.answer}`;input.parentElement.appendChild(hint);
+  }
+  processAnswer(correct,q.vocab);
+}
+
+function processAnswer(correct,vocab){
+  if(correct){
+    state.score+=state.difficulty==='hard'?20:10;
+    state.combo++;state.totalCorrect++;
+    if(state.combo>state.bestCombo)state.bestCombo=state.combo;
+    const xpGain=10+(state.combo*2);state.xp+=xpGain;
+    const newLevel=Math.floor(state.xp/100)+1;
+    if(newLevel>state.level){state.level=newLevel;showStreakText(`🎖 Level ${state.level}!`);}
+
+    sfxCorrect();
+    document.getElementById('questionArea').classList.add('glow-pink');
+    triggerFireworks(state.combo>=5);
+    showXPPop(xpGain);
+
+    if(state.combo>=5){sfxCombo();showStreakText(['🔥 Amazing!','⚡ Perfect!','🌟 Incredible!','💎 Legendary!'][Math.floor(Math.random()*4)]);}
+    else if(state.combo>=3){sfxCombo();}
+
+    state.wrongWords=state.wrongWords.filter(w=>w.word!==vocab.word);
+  }else{
+    state.combo=0;state.totalWrong++;sfxWrong();
+    document.getElementById('questionArea').classList.add('shake');
+    if(!state.wrongWords.find(w=>w.word===vocab.word))state.wrongWords.push(vocab);
+  }
+  updateGameUI();showExplanation(vocab,correct);save();
+}
+
+function showExplanation(v,correct){
+  const area=document.getElementById('explanationArea');
+  area.style.display='';
+  let synHtml='';if(v.synonyms&&v.synonyms.length>0){synHtml=v.synonyms.map(s=>`<div class="synonym-item"><strong>${s.word}</strong> → ${s.meaning} (${s.meaningVi})</div>`).join('');}
+  let famHtml='';if(v.family&&v.family.length>0){famHtml=v.family.map(f=>`<div class="family-item"><strong>${f.word}</strong> → ${f.meaning} (${f.meaningVi})</div>`).join('');}
+  let colHtml='';if(v.collocations&&v.collocations.length>0){colHtml=v.collocations.map(c=>`<div class="collocation-item"><strong>${c.phrase}</strong> → ${c.meaning} (${c.meaningVi})</div>`).join('');}
+  
+  area.innerHTML=`<div class="slide-up">
+  <p class="font-black text-lg mb-2" style="color:${correct?'var(--green)':'var(--red)'}">${correct?'✅ Correct!':'❌ Incorrect'}</p>
+  <div class="flex items-center gap-2 mb-3">
+  <p class="font-bold text-lg" style="color:var(--primary)">${v.word}</p>
+  <span class="text-sm" style="color:var(--gray)">${v.ipa||''}</span>
+  <span class="text-sm font-semibold" style="color:var(--gray)">(${v.pos})</span>
+  <button class="pronounce-btn" onclick="pronounce('${v.word}')">🔊</button>
+  </div>
+  <div class="grid gap-2 text-sm" style="color:var(--text)">
+  <p><strong style="color:var(--primary)">📖 Meaning:</strong></p>
+  <p>&nbsp;&nbsp;EN: ${v.meaning}</p>
+  <p style="color:var(--pink)">&nbsp;&nbsp;VI: ${v.meaningVi}</p>
+  ${synHtml?`<p class="mt-2"><strong style="color:var(--primary)">🔄 Synonyms:</strong></p>${synHtml}`:''}
+  ${famHtml?`<p class="mt-2"><strong style="color:var(--primary)">👪 Word Family:</strong></p>${famHtml}`:''}
+  ${colHtml?`<p class="mt-2"><strong style="color:var(--primary)">🔗 Collocations:</strong></p>${colHtml}`:''}
+  <p class="mt-2"><strong style="color:var(--primary)">📝 Example:</strong></p>
+  <p>&nbsp;&nbsp;<em>${v.example}</em></p>
+  <p style="color:var(--pink)">&nbsp;&nbsp;<em>${v.exampleVi}</em></p>
+  <p class="mt-2"><strong style="color:var(--primary)">⚠️ Common Mistakes:</strong></p>
+  <p>&nbsp;&nbsp;${v.mistakes}</p>
+  </div>
+  <button class="btn btn-sm btn-primary mt-3" onclick="nextQuestion()">Next →</button>
+  </div>`;
+}
+
+function nextQuestion(){
+  state.questionIndex++;
+  if(state.questionIndex>=state.questions.length){endPart();return;}
+  renderQuestion();updateGameUI();
+}
+
+function skipQuestion(){
+  if(state.answered){nextQuestion();return;}
+  state.combo=0;state.totalWrong++;
+  const v=state.questions[state.questionIndex].vocab;
+  if(!state.wrongWords.find(w=>w.word===v.word))state.wrongWords.push(v);
+  updateGameUI();nextQuestion();
+}
+
+function restartPart(){startPart(state.currentPart);}
+
+function endPart(){
+  clearInterval(state.timerInterval);
+  state.partScores[state.currentPart]={score:state.score,correct:state.totalCorrect,wrong:state.totalWrong,time:state.timer};
+  save();
+  showScreen('results');
+  const pct=Math.round(state.totalCorrect/state.questions.length*100);
+  document.getElementById('resultStats').innerHTML=`
+  <div class="grid grid-cols-2 gap-3 text-left mb-4">
+  <div class="card" style="border-left:4px solid var(--green)"><p class="text-sm" style="color:var(--gray)">Correct</p><p class="font-black text-2xl" style="color:var(--green)">${state.totalCorrect}</p></div>
+  <div class="card" style="border-left:4px solid var(--red)"><p class="text-sm" style="color:var(--gray)">Wrong</p><p class="font-black text-2xl" style="color:var(--red)">${state.totalWrong}</p></div>
+  <div class="card" style="border-left:4px solid var(--primary)"><p class="text-sm" style="color:var(--gray)">Score</p><p class="font-black text-2xl" style="color:var(--primary)">${state.score}</p></div>
+  <div class="card" style="border-left:4px solid var(--orange)"><p class="text-sm" style="color:var(--gray)">Best Combo</p><p class="font-black text-2xl" style="color:var(--orange)">🔥 ${state.bestCombo}</p></div>
+  </div>
+  <p class="font-bold text-lg" style="color:var(--primary)">${pct}% Accuracy</p>
+  <p class="text-sm" style="color:var(--gray)">⏱ Time: ${state.timer}s | ⚡ ${state.xp} XP | 🎖 Level ${state.level}</p>`;
+  if(pct>=80)triggerFireworks(true);
+  document.getElementById('nextPartBtn').style.display=state.currentPart<5?'':'none';
+}
+
+function nextPart(){startPart(state.currentPart+1);}
+
+// ===== VOCAB LIST =====
+function showVocabList(){
+  showScreen('vocab');renderVocabGrid(VOCAB);
+}
+function renderVocabGrid(list){
+  document.getElementById('vocabGrid').innerHTML=list.map(v=>`
+  <div class="vocab-card">
+  <div class="flex items-start justify-between gap-2">
+  <div><div class="flex items-center gap-2 mb-1">
+  <p class="font-black" style="color:var(--primary)">${v.word}</p>
+  <button class="pronounce-btn" onclick="pronounce('${v.word}')" title="Pronounce">🔊</button>
+  <span class="text-sm font-normal" style="color:var(--gray)">(${v.pos})</span></div>
+  <p class="text-sm" style="color:var(--text)">${v.meaning}</p>
+  <p class="text-sm font-semibold" style="color:var(--pink)">${v.meaningVi}</p></div>
+  <span class="badge badge-blue text-xs">${v.ipa||''}</span></div>
+  <div class="mt-2 text-xs" style="color:var(--gray)">
+  ${v.synonyms&&v.synonyms.length>0?`<p>🔄 <strong>Synonyms:</strong> ${v.synonyms.map(s=>s.word).join(', ')}</p>`:''}
+  ${v.collocations&&v.collocations.length>0?`<p>🔗 <strong>Collocations:</strong> ${v.collocations.map(c=>c.phrase).join(', ')}</p>`:''}
+  <p class="mt-1 italic">📝 ${v.example}</p>
+  <p class="italic" style="color:var(--pink)">📝 ${v.exampleVi}</p></div></div>`).join('');
+}
+function filterVocab(q){
+  const f=VOCAB.filter(v=>v.word.toLowerCase().includes(q.toLowerCase())||v.meaning.toLowerCase().includes(q.toLowerCase())||v.meaningVi.toLowerCase().includes(q.toLowerCase()));
+  renderVocabGrid(f);
+}
+
+// ===== MINI GAMES =====
+function showMiniGames(){showScreen('mini');document.getElementById('miniGameArea').innerHTML='';}
+
+function startMiniGame(type){
+  state.miniGame=type;const area=document.getElementById('miniGameArea');
+  if(type==='memory'){
+    const words=shuffle(VOCAB).slice(0,6);
+    const cards=shuffle([...words.map(w=>({id:w.word,text:w.word,type:'word'})),...words.map(w=>({id:w.word,text:w.meaningVi,type:'meaning'}))]);
+    state.miniState={cards,flipped:[],matched:[],moves:0};
+    area.innerHTML=`<h3 class="font-bold mb-3 text-center" style="color:var(--primary)">🃏 Memory Flip – Match words with Vietnamese meanings</h3>
+    <p class="text-center text-sm mb-3" style="color:var(--gray)">Moves: <span id="memMoves">0</span> | Matched: <span id="memMatched">0</span>/6</p>
+    <div class="grid grid-cols-3 md:grid-cols-4 gap-3" id="memGrid">${cards.map((c,i)=>`
+    <div class="flip-card" style="height:90px;" onclick="flipCard(${i})" id="mc${i}">
+    <div class="flip-inner"><div class="flip-front text-sm">?</div><div class="flip-back text-xs">${c.text}</div></div></div>`).join('')}</div>`;
+  }else if(type==='speed'){
+    state.miniState={words:shuffle([...VOCAB]).slice(0,10),idx:0,score:0,timeLeft:60};
+    area.innerHTML=`<h3 class="font-bold mb-3 text-center" style="color:var(--pink)">⚡ Speed Mode – 60 seconds!</h3>
+    <p class="text-center mb-3"><span class="badge badge-orange" id="speedTimer">⏱ 60s</span> <span class="badge badge-blue" id="speedScore">🎯 0/10</span></p>
+    <div id="speedQ" class="card"></div>`;
+    renderSpeedQ();
+    clearInterval(state.miniState.interval);
+    state.miniState.interval=setInterval(()=>{
+      state.miniState.timeLeft--;document.getElementById('speedTimer').textContent=`⏱ ${state.miniState.timeLeft}s`;
+      if(state.miniState.timeLeft<=0){clearInterval(state.miniState.interval);area.innerHTML=`<div class="card text-center"><p class="text-3xl mb-2">⏱</p><p class="font-black text-xl" style="color:var(--primary)">Time's Up!</p><p class="font-bold" style="color:var(--pink)">Score: ${state.miniState.score}/${state.miniState.words.length}</p><button class="btn btn-sm btn-primary mt-3" onclick="showMiniGames()">Back</button></div>`;}
+    },1000);
+  }else if(type==='matching'){
+    const words=shuffle(VOCAB).slice(0,5);
+    state.miniState={words,selected:null,matched:[],left:shuffle(words.map(w=>({id:w.word,text:w.word}))),right:shuffle(words.map(w=>({id:w.word,text:w.meaningVi})))};
+    renderMatching();
+  }
+}
+
+// Memory
+function flipCard(i){
+  const ms=state.miniState;if(ms.matched.includes(ms.cards[i].id)&&ms.flipped.length===0)return;
+  if(ms.flipped.length>=2)return;if(ms.flipped.includes(i))return;
+  ms.flipped.push(i);document.getElementById('mc'+i).classList.add('flipped');
+  if(ms.flipped.length===2){
+    ms.moves++;document.getElementById('memMoves').textContent=ms.moves;
+    const[a,b]=ms.flipped;
+    if(ms.cards[a].id===ms.cards[b].id&&ms.cards[a].type!==ms.cards[b].type){
+      ms.matched.push(ms.cards[a].id);document.getElementById('memMatched').textContent=ms.matched.length;
+      sfxCorrect();triggerFireworks(false);ms.flipped=[];
+      if(ms.matched.length===6){setTimeout(()=>{showStreakText('🎉 Perfect!');bigFirework();},300);}
+    }else{
+      sfxWrong();setTimeout(()=>{document.getElementById('mc'+a).classList.remove('flipped');document.getElementById('mc'+b).classList.remove('flipped');ms.flipped=[];},800);
+    }
+  }
+}
+
+// Speed
+function renderSpeedQ(){
+  const ms=state.miniState;if(ms.idx>=ms.words.length){clearInterval(ms.interval);document.getElementById('miniGameArea').innerHTML=`<div class="card text-center"><p class="text-3xl mb-2">🏆</p><p class="font-black text-xl" style="color:var(--primary)">Complete!</p><p class="font-bold" style="color:var(--pink)">Score: ${ms.score}/${ms.words.length}</p><button class="btn btn-sm btn-primary mt-3" onclick="showMiniGames()">Back</button></div>`;return;}
+  const w=ms.words[ms.idx];const distractors=shuffle(VOCAB.filter(v=>v.word!==w.word)).slice(0,3);
+  const opts=shuffle([{t:w.meaningVi,c:true},...distractors.map(d=>({t:d.meaningVi,c:false}))]);
+  document.getElementById('speedQ').innerHTML=`<p class="font-black text-lg mb-3" style="color:var(--primary)">${w.word} <button class="pronounce-btn" onclick="pronounce('${w.word}')">🔊</button></p>
+  <div class="flex flex-col gap-2">${opts.map((o,i)=>`<button class="option-btn" onclick="speedAns(${i},${o.c})">${o.t}</button>`).join('')}</div>`;
+}
+function speedAns(i,correct){
+  if(correct){state.miniState.score++;sfxCorrect();triggerFireworks(false);}else sfxWrong();
+  state.miniState.idx++;document.getElementById('speedScore').textContent=`🎯 ${state.miniState.score}/${state.miniState.words.length}`;
+  renderSpeedQ();
+}
+
+// Matching
+function renderMatching(){
+  const ms=state.miniState;const area=document.getElementById('miniGameArea');
+  area.innerHTML=`<h3 class="font-bold mb-3 text-center" style="color:var(--orange)">🧩 Matching – Tap a word, then its meaning</h3>
+  <p class="text-center text-sm mb-3" style="color:var(--gray)">Matched: <span id="matchCount">${ms.matched.length}</span>/5</p>
+  <div class="grid grid-cols-2 gap-4">
+  <div class="flex flex-col gap-2">${ms.left.map(w=>`<button class="option-btn ${ms.matched.includes(w.id)?'correct':''}" ${ms.matched.includes(w.id)?'disabled':''} onclick="matchSelect('left','${w.id}')" id="ml_${w.id}" style="${ms.selected&&ms.selected.side==='left'&&ms.selected.id===w.id?'border-color:var(--pink);background:var(--pink-light)':''}">${w.text} <button class="pronounce-btn" style="float:right" onclick="event.stopPropagation();pronounce('${w.text}')">🔊</button></button>`).join('')}</div>
+  <div class="flex flex-col gap-2">${ms.right.map(w=>`<button class="option-btn ${ms.matched.includes(w.id)?'correct':''}" ${ms.matched.includes(w.id)?'disabled':''} onclick="matchSelect('right','${w.id}')" id="mr_${w.id}" style="${ms.selected&&ms.selected.side==='right'&&ms.selected.id===w.id?'border-color:var(--pink);background:var(--pink-light)':''}">${w.text}</button>`).join('')}</div>
+  </div>`;
+}
+function matchSelect(side,id){
+  const ms=state.miniState;
+  if(ms.matched.includes(id)&&side==='left')return;
+  if(!ms.selected){ms.selected={side,id};renderMatching();return;}
+  if(ms.selected.side===side){ms.selected={side,id};renderMatching();return;}
+  if(ms.selected.id===id){ms.matched.push(id);sfxCorrect();triggerFireworks(false);
+    if(ms.matched.length===5){setTimeout(()=>{showStreakText('🎉 All matched!');bigFirework();},300);}
+  }else{sfxWrong();}
+  ms.selected=null;renderMatching();
+}
+
+// ===== ELEMENT SDK CONFIG =====
+const defaultConfig={game_title:'READING 4A',background_color:'#f0f4ff',surface_color:'#ffffff',text_color:'#1e293b',primary_color:'#2563eb',accent_color:'#ec4899',font_family:'Nunito',font_size:16,pronunciation_enabled:true,bilingual_explanations:true};
+
+function applyConfig(config){
+  const t=config.game_title||defaultConfig.game_title;
+  const el=document.getElementById('gameTitle');if(el)el.textContent=t;
+  document.documentElement.style.setProperty('--bg',config.background_color||defaultConfig.background_color);
+  document.documentElement.style.setProperty('--card',config.surface_color||defaultConfig.surface_color);
+  document.documentElement.style.setProperty('--text',config.text_color||defaultConfig.text_color);
+  document.documentElement.style.setProperty('--primary',config.primary_color||defaultConfig.primary_color);
+  document.documentElement.style.setProperty('--pink',config.accent_color||defaultConfig.accent_color);
+  document.body.style.fontFamily=`${config.font_family||defaultConfig.font_family}, sans-serif`;
+  const bs=config.font_size||defaultConfig.font_size;
+  document.body.style.fontSize=bs+'px';
+  state.pronunciationEnabled=config.pronunciation_enabled!==false;
+}
+
+window.elementSdk.init({
+  defaultConfig,
+  onConfigChange:async(config)=>{applyConfig(config);},
+  mapToCapabilities:(config)=>({
+    recolorables:[
+      {get:()=>config.background_color||defaultConfig.background_color,set:v=>{config.background_color=v;window.elementSdk.setConfig({background_color:v})}},
+      {get:()=>config.surface_color||defaultConfig.surface_color,set:v=>{config.surface_color=v;window.elementSdk.setConfig({surface_color:v})}},
+      {get:()=>config.text_color||defaultConfig.text_color,set:v=>{config.text_color=v;window.elementSdk.setConfig({text_color:v})}},
+      {get:()=>config.primary_color||defaultConfig.primary_color,set:v=>{config.primary_color=v;window.elementSdk.setConfig({primary_color:v})}},
+      {get:()=>config.accent_color||defaultConfig.accent_color,set:v=>{config.accent_color=v;window.elementSdk.setConfig({accent_color:v})}},
+    ],
+    borderables:[],
+    fontEditable:{get:()=>config.font_family||defaultConfig.font_family,set:v=>{config.font_family=v;window.elementSdk.setConfig({font_family:v})}},
+    fontSizeable:{get:()=>config.font_size||defaultConfig.font_size,set:v=>{config.font_size=v;window.elementSdk.setConfig({font_size:v})}},
+  }),
+  mapToEditPanelValues:(config)=>new Map([['game_title',config.game_title||defaultConfig.game_title]])
+});
+
+load();updateMenuStats();
+lucide.createIcons();
+</script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9f23005ff6d5105d',t:'MTc3NzE3OTM5Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
